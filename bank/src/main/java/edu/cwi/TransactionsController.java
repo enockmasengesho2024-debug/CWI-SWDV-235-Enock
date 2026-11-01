@@ -2,6 +2,7 @@ package edu.cwi;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,24 +17,17 @@ import static j2html.TagCreator.body;
 import static j2html.TagCreator.br;
 import static j2html.TagCreator.button;
 import static j2html.TagCreator.div;
-import static j2html.TagCreator.each;
 import static j2html.TagCreator.form;
 import static j2html.TagCreator.h1;
-import static j2html.TagCreator.h2;
 import static j2html.TagCreator.head;
 import static j2html.TagCreator.html;
 import static j2html.TagCreator.input;
 import static j2html.TagCreator.label;
 import static j2html.TagCreator.meta;
 import static j2html.TagCreator.p;
-import static j2html.TagCreator.table;
-import static j2html.TagCreator.tbody;
-import static j2html.TagCreator.td;
-import static j2html.TagCreator.th;
-import static j2html.TagCreator.thead;
 import static j2html.TagCreator.title;
-import static j2html.TagCreator.tr;
 import j2html.tags.DomContent;
+
 
 public class TransactionsController implements CrudHandler {
 
@@ -43,47 +37,17 @@ public class TransactionsController implements CrudHandler {
 
     private final AtomicInteger nextId = new AtomicInteger(1);
 
-    private record TransactionData(
+    public  record TransactionData(
             int id, String description, BigDecimal amount) {
     }
 
     @Override
     public void getAll(Context ctx) {
-        ctx.html(page("Transactions",
-                h2("Add transaction"),
-                transactionForm("/transactions", "", ""),
-                h2("Saved transactions"),
-                p(transactions.isEmpty() ? "No transactions yet." : ""),
-                table(
-                    thead(tr(
-                        th("ID"),
-                        th("Description"),
-                        th("Amount"),
-                        th("Actions")
-                        )),
-                    tbody(each(transactions.values(), transaction -> tr(
-                        td(String.valueOf(transaction.id())),
-                        td(transaction.description()),
-                        td(transaction.amount().toPlainString()),
-                        td(
-                            a("View / edit").withHref(
-                                    "/transactions/" + transaction.id()
-                                        ),
-                                        form(
-                                            button("Delete").withType("submit")
-                                    )
-                                .withMethod("post")
-                                .withAction(
-                                    "/transactions/"
-                                    + transaction.id()
-                                    + "/delete"
-                                    )
-                                )
-                        )))
-                )
+        ctx.render("transactionsPage.jte", Map.of(
+            "transactions", List.copyOf(transactions.values())
         ));
     }
-
+    
     @Override
     public void getOne(Context ctx, String resourceId) {
         TransactionData transaction = transactions.get(parseId(resourceId));
@@ -217,5 +181,3 @@ public class TransactionsController implements CrudHandler {
         ).render();
     }
 }
-
-// I used the table  to make the transaction easy to understand.

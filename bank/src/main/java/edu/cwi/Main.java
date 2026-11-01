@@ -2,8 +2,8 @@ package edu.cwi;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
-import static io.javalin.apibuilder.ApiBuilder.*;
 
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Main {
 
@@ -24,20 +24,30 @@ public class Main {
 
             config.routes.apiBuilder(() -> {
                 path("/transactions", () -> {
+
                     get(controller::getAll);
                     post(controller::create);
 
                     path("/{id}", () -> {
+
                         get(ctx ->
-                            controller.getOne(ctx, ctx.pathParam("id"))
+                                controller.getOne(ctx, ctx.pathParam("id"))
                         );
 
                         patch(ctx ->
-                            controller.update(ctx, ctx.pathParam("id"))
+                                controller.update(ctx, ctx.pathParam("id"))
                         );
 
                         delete(ctx ->
-                        controller.delete(ctx, ctx.pathParam("id"))
+                                controller.delete(ctx, ctx.pathParam("id"))
+                        );
+
+                        post("/update", ctx ->
+                                controller.update(ctx, ctx.pathParam("id"))
+                        );
+
+                        post("/delete", ctx ->
+                                controller.delete(ctx, ctx.pathParam("id"))
                         );
                     });
                 });

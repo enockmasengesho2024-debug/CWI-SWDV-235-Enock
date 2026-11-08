@@ -9,9 +9,7 @@
     account = @`
         @template.userAccount(
             name = account.name(),
-            balance = account.formatBalance()
-        )
-    `,
+            balance = account.formatBalance())`,
 
     detail = @`
         <section>
@@ -37,6 +35,5 @@
 
         @template.transactionsList(
             transactions = account.transactions()
-        )
-    `
+        )`
 )

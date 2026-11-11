@@ -2,7 +2,7 @@ package edu.cwi;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,14 +40,32 @@ public class TransactionsController implements CrudHandler {
     public  record TransactionData(
             int id, String description, BigDecimal amount) {
     }
-
     @Override
     public void getAll(Context ctx) {
-        ctx.render("transactionsPage.jte", Map.of(
-            "transactions", List.copyOf(transactions.values())
+        Map<String, String> transactionDetails = new LinkedHashMap<>();
+        BigDecimal balance = BigDecimal.ZERO;
+
+        for (TransactionData transaction : transactions.values()) {
+            transactionDetails.put(
+                    String.valueOf(transaction.id()),
+                    transaction.description() + " ($"
+                            + transaction.amount().toPlainString() + ")"
+            );
+
+            balance = balance.add(transaction.amount());
+        }
+
+        UserAccount account = new UserAccount(
+                "Enock",
+                balance.doubleValue(),
+                transactionDetails
+        );
+
+        ctx.render("accountPage.jte", Map.of(
+                "title", "My Account",
+                "account", account
         ));
     }
-    
     @Override
     public void getOne(Context ctx, String resourceId) {
         TransactionData transaction = transactions.get(parseId(resourceId));

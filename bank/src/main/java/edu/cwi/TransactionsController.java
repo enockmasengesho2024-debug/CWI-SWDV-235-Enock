@@ -41,7 +41,9 @@ public class TransactionsController implements CrudHandler {
             int id, String description, BigDecimal amount) {
     }
     @Override
-    public void getAll(Context ctx) {
+  
+
+       public void getAll(Context ctx) {
         Map<String, String> transactionDetails = new LinkedHashMap<>();
         BigDecimal balance = BigDecimal.ZERO;
 
@@ -66,6 +68,7 @@ public class TransactionsController implements CrudHandler {
                 "account", account
         ));
     }
+
     @Override
     public void getOne(Context ctx, String resourceId) {
         TransactionData transaction = transactions.get(parseId(resourceId));

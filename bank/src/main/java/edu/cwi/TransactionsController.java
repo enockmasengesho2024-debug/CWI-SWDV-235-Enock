@@ -28,7 +28,6 @@ import static j2html.TagCreator.p;
 import static j2html.TagCreator.title;
 import j2html.tags.DomContent;
 
-
 public class TransactionsController implements CrudHandler {
 
    
@@ -41,7 +40,6 @@ public class TransactionsController implements CrudHandler {
             int id, String description, BigDecimal amount) {
     }
     @Override
-  
 
        public void getAll(Context ctx) {
         Map<String, String> transactionDetails = new LinkedHashMap<>();

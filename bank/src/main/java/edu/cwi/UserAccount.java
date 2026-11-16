@@ -21,3 +21,4 @@ public record UserAccount(
         return formatter.format(balance);
     }
 }
+

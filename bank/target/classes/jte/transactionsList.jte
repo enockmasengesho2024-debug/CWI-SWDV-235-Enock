@@ -1,9 +1,10 @@
 @import java.util.Map
+
 @param Map<String, String> transactions
+@param String csrfToken
 
 <section>
     <h2>Transactions</h2>
-
     @if(transactions.isEmpty())
         <p>No transactions yet.</p>
     @else
@@ -12,11 +13,10 @@
                 <li>
                     <strong>#${transaction.getKey()}:</strong>
                     ${transaction.getValue()}
-
                     <a href="/transactions/${transaction.getKey()}">Edit</a>
-
                     <form method="post"
                           action="/transactions/${transaction.getKey()}/delete">
+                        <input type="hidden" name="csrfToken" value="${csrfToken}">
                         <button type="submit">Delete</button>
                     </form>
                 </li>

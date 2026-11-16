@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="edu.cwi.SecurityTest" time="1.477" tests="5" errors="0" skipped="0" failures="2">
+  <properties>
+    <property name="java.specification.version" value="25"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/test-classes:/Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/classes:/Users/enockmasengesho/.m2/repository/junit/junit/4.11/junit-4.11.jar:/Users/enockmasengesho/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/enockmasengesho/.m2/repository/io/javalin/javalin/7.2.3/javalin-7.2.3.jar:/Users/enockmasengesho/.m2/repository/org/slf4j/slf4j-api/2.0.18/slf4j-api-2.0.18.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-server/12.1.12/jetty-server-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-http/12.1.12/jetty-http-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-util/12.1.12/jetty-util-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-io/12.1.12/jetty-io-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/jetty-ee10-servlet/12.1.12/jetty-ee10-servlet-12.1.12.jar:/Users/enockmasengesho/.m2/repository/jakarta/servlet/jakarta.servlet-api/6.0.0/jakarta.servlet-api-6.0.0.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-security/12.1.12/jetty-security-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-session/12.1.12/jetty-session-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/websocket/jetty-ee10-websocket-jetty-server/12.1.12/jetty-ee10-websocket-jetty-server-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/jetty-ee10-annotations/12.1.12/jetty-ee10-annotations-12.1.12.jar:/Users/enockmasengesho/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-annotations/12.1.12/jetty-annotations-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/jetty-ee10-plus/12.1.12/jetty-ee10-plus-12.1.12.jar:/Users/enockmasengesho/.m2/repository/jakarta/enterprise/jakarta.enterprise.cdi-api/4.0.1/jakarta.enterprise.cdi-api-4.0.1.jar:/Users/enockmasengesho/.m2/repository/jakarta/enterprise/jakarta.enterprise.lang-model/4.0.1/jakarta.enterprise.lang-model-4.0.1.jar:/Users/enockmasengesho/.m2/repository/jakarta/inject/jakarta.inject-api/2.0.1/jakarta.inject-api-2.0.1.jar:/Users/enockmasengesho/.m2/repository/jakarta/interceptor/jakarta.interceptor-api/2.1.0/jakarta.interceptor-api-2.1.0.jar:/Users/enockmasengesho/.m2/repository/jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-jndi/12.1.12/jetty-jndi-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-plus/12.1.12/jetty-plus-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/jetty-ee10-webapp/12.1.12/jetty-ee10-webapp-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-xml/12.1.12/jetty-xml-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee/jetty-ee-webapp/12.1.12/jetty-ee-webapp-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/ow2/asm/asm/9.10.1/asm-9.10.1.jar:/Users/enockmasengesho/.m2/repository/org/ow2/asm/asm-commons/9.10.1/asm-commons-9.10.1.jar:/Users/enockmasengesho/.m2/repository/org/ow2/asm/asm-tree/9.10.1/asm-tree-9.10.1.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/websocket/jetty-ee10-websocket-servlet/12.1.12/jetty-ee10-websocket-servlet-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-core-server/12.1.12/jetty-websocket-core-server-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-jetty-api/12.1.12/jetty-websocket-jetty-api-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-jetty-common/12.1.12/jetty-websocket-jetty-common-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-core-common/12.1.12/jetty-websocket-core-common-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-jetty-server/12.1.12/jetty-websocket-jetty-server-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/2.2.20/kotlin-stdlib-2.2.20.jar:/Users/enockmasengesho/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/Users/enockmasengesho/.m2/repository/org/slf4j/slf4j-simple/2.0.18/slf4j-simple-2.0.18.jar:/Users/enockmasengesho/.m2/repository/com/j2html/j2html/1.6.0/j2html-1.6.0.jar:/Users/enockmasengesho/.m2/repository/io/javalin/javalin-rendering-jte/7.2.3/javalin-rendering-jte-7.2.3.jar:/Users/enockmasengesho/.m2/repository/gg/jte/jte/3.2.3/jte-3.2.3.jar:/Users/enockmasengesho/.m2/repository/gg/jte/jte-runtime/3.2.3/jte-runtime-3.2.3.jar:/Users/enockmasengesho/.m2/repository/gg/jte/jte-extension-api/3.2.3/jte-extension-api-3.2.3.jar:"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="java.vm.specification.version" value="25"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="/Users/enockmasengesho/Library/Java/JavaVirtualMachines/openjdk-25.0.2/Contents/Home/lib"/>
+    <property name="sun.java.command" value="/Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/surefire/surefirebooter15554611455808112619.jar /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/surefire 2026-11-14T23-38-27_217-jvmRun1 surefire14580121991250504751tmp surefire_02237389704537225419tmp"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="test" value="edu.cwi.SecurityTest"/>
+    <property name="surefire.test.class.path" value="/Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/test-classes:/Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/classes:/Users/enockmasengesho/.m2/repository/junit/junit/4.11/junit-4.11.jar:/Users/enockmasengesho/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/enockmasengesho/.m2/repository/io/javalin/javalin/7.2.3/javalin-7.2.3.jar:/Users/enockmasengesho/.m2/repository/org/slf4j/slf4j-api/2.0.18/slf4j-api-2.0.18.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-server/12.1.12/jetty-server-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-http/12.1.12/jetty-http-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-util/12.1.12/jetty-util-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-io/12.1.12/jetty-io-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/jetty-ee10-servlet/12.1.12/jetty-ee10-servlet-12.1.12.jar:/Users/enockmasengesho/.m2/repository/jakarta/servlet/jakarta.servlet-api/6.0.0/jakarta.servlet-api-6.0.0.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-security/12.1.12/jetty-security-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-session/12.1.12/jetty-session-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/websocket/jetty-ee10-websocket-jetty-server/12.1.12/jetty-ee10-websocket-jetty-server-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/jetty-ee10-annotations/12.1.12/jetty-ee10-annotations-12.1.12.jar:/Users/enockmasengesho/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-annotations/12.1.12/jetty-annotations-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/jetty-ee10-plus/12.1.12/jetty-ee10-plus-12.1.12.jar:/Users/enockmasengesho/.m2/repository/jakarta/enterprise/jakarta.enterprise.cdi-api/4.0.1/jakarta.enterprise.cdi-api-4.0.1.jar:/Users/enockmasengesho/.m2/repository/jakarta/enterprise/jakarta.enterprise.lang-model/4.0.1/jakarta.enterprise.lang-model-4.0.1.jar:/Users/enockmasengesho/.m2/repository/jakarta/inject/jakarta.inject-api/2.0.1/jakarta.inject-api-2.0.1.jar:/Users/enockmasengesho/.m2/repository/jakarta/interceptor/jakarta.interceptor-api/2.1.0/jakarta.interceptor-api-2.1.0.jar:/Users/enockmasengesho/.m2/repository/jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-jndi/12.1.12/jetty-jndi-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-plus/12.1.12/jetty-plus-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/jetty-ee10-webapp/12.1.12/jetty-ee10-webapp-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/jetty-xml/12.1.12/jetty-xml-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee/jetty-ee-webapp/12.1.12/jetty-ee-webapp-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/ow2/asm/asm/9.10.1/asm-9.10.1.jar:/Users/enockmasengesho/.m2/repository/org/ow2/asm/asm-commons/9.10.1/asm-commons-9.10.1.jar:/Users/enockmasengesho/.m2/repository/org/ow2/asm/asm-tree/9.10.1/asm-tree-9.10.1.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/ee10/websocket/jetty-ee10-websocket-servlet/12.1.12/jetty-ee10-websocket-servlet-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-core-server/12.1.12/jetty-websocket-core-server-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-jetty-api/12.1.12/jetty-websocket-jetty-api-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-jetty-common/12.1.12/jetty-websocket-jetty-common-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-core-common/12.1.12/jetty-websocket-core-common-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/eclipse/jetty/websocket/jetty-websocket-jetty-server/12.1.12/jetty-websocket-jetty-server-12.1.12.jar:/Users/enockmasengesho/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/2.2.20/kotlin-stdlib-2.2.20.jar:/Users/enockmasengesho/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/Users/enockmasengesho/.m2/repository/org/slf4j/slf4j-simple/2.0.18/slf4j-simple-2.0.18.jar:/Users/enockmasengesho/.m2/repository/com/j2html/j2html/1.6.0/j2html-1.6.0.jar:/Users/enockmasengesho/.m2/repository/io/javalin/javalin-rendering-jte/7.2.3/javalin-rendering-jte-7.2.3.jar:/Users/enockmasengesho/.m2/repository/gg/jte/jte/3.2.3/jte-3.2.3.jar:/Users/enockmasengesho/.m2/repository/gg/jte/jte-runtime/3.2.3/jte-runtime-3.2.3.jar:/Users/enockmasengesho/.m2/repository/gg/jte/jte-extension-api/3.2.3/jte-extension-api-3.2.3.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/Users/enockmasengesho"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2026-01-20"/>
+    <property name="java.home" value="/Users/enockmasengesho/Library/Java/JavaVirtualMachines/openjdk-25.0.2/Contents/Home"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="apple.awt.application.name" value="ForkedBooter"/>
+    <property name="surefire.real.class.path" value="/Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/surefire/surefirebooter15554611455808112619.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="java.runtime.version" value="25.0.2+10-69"/>
+    <property name="user.name" value="enockmasengesho"/>
+    <property name="stdout.encoding" value="UTF-8"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="26.3"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="maven.ext.class.path" value="/Users/enockmasengesho/.vscode/extensions/oracle.oracle-java-27.0.0/nbcode/java/maven-nblib/netbeans-eventspy.jar"/>
+    <property name="localRepository" value="/Users/enockmasengesho/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="/var/folders/g7/gty7kdws4xb7pwzgg_pq6fxm0000gn/T/"/>
+    <property name="java.version" value="25.0.2"/>
+    <property name="user.dir" value="/Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank"/>
+    <property name="os.arch" value="aarch64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/Users/enockmasengesho/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="UTF-8"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="25.0.2+10-69"/>
+    <property name="stdin.encoding" value="UTF-8"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="java.class.version" value="69.0"/>
+  </properties>
+  <testcase name="formsUpdateOnlyTheLoggedInUsersLedger" classname="edu.cwi.SecurityTest" time="0.957"/>
+  <testcase name="anonymousVisitorsCannotUseProtectedRoutes" classname="edu.cwi.SecurityTest" time="0.055"/>
+  <testcase name="eachUserSeesTheirOwnAccountThroughTheLayout" classname="edu.cwi.SecurityTest" time="0.211">
+    <failure message="&lt;!DOCTYPE html&gt;&#10;&lt;html lang=&quot;en&quot;&gt;&#10;&lt;head&gt;&#10;    &lt;meta charset=&quot;UTF-8&quot;&gt;&#10;    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;&#10;    &lt;title&gt;My Account&lt;/title&gt;&#10;&lt;/head&gt;&#10;&lt;body&gt;&#10;    &lt;header&gt;&#10;        &lt;h1&gt;My Account&lt;/h1&gt;&#10;    &lt;/header&gt;&#10;&#10;    &lt;main&gt;&#10;        &#10;        &#10;&lt;section&gt;&#10;    &lt;h2&gt;Enock&apos;s account&lt;/h2&gt;&#10;    &lt;p&gt;Balance: &lt;strong&gt;$1,250.50&lt;/strong&gt;&lt;/p&gt;&#10;&lt;/section&gt;&#10;        &lt;form method=&quot;post&quot; action=&quot;/logout&quot;&gt;&#10;            &lt;input type=&quot;hidden&quot; name=&quot;csrfToken&quot; value=&quot;NbWuYAeMavIC3r7fO3vfdel-w1gjYzLHnkllPv8FzRE&quot;&gt;&#10;            &lt;button type=&quot;submit&quot;&gt;Log Out&lt;/button&gt;&#10;        &lt;/form&gt;&#10;    &#10;        &#10;        &lt;section&gt;&#10;            &lt;h2&gt;Add transaction&lt;/h2&gt;&#10;            &lt;p&gt;Use a positive amount for a deposit and a negative amount for a withdrawal.&lt;/p&gt;&#10;            &lt;form method=&quot;post&quot; action=&quot;/transactions&quot;&gt;&#10;                &lt;input type=&quot;hidden&quot; name=&quot;csrfToken&quot; value=&quot;NbWuYAeMavIC3r7fO3vfdel-w1gjYzLHnkllPv8FzRE&quot;&gt;&#10;                &lt;p&gt;&#10;                    &lt;label for=&quot;description&quot;&gt;Description&lt;/label&gt;&#10;                    &lt;input id=&quot;description&quot; name=&quot;description&quot; type=&quot;text&quot;&#10;                           maxlength=&quot;120&quot; required&gt;&#10;                &lt;/p&gt;&#10;                &lt;p&gt;&#10;                    &lt;label for=&quot;amount&quot;&gt;Amount&lt;/label&gt;&#10;                    &lt;input id=&quot;amount&quot; name=&quot;amount&quot; type=&quot;number&quot;&#10;                           step=&quot;0.01&quot; required&gt;&#10;                &lt;/p&gt;&#10;                &lt;button type=&quot;submit&quot;&gt;Save transaction&lt;/button&gt;&#10;            &lt;/form&gt;&#10;        &lt;/section&gt;&#10;        &#10;&lt;section&gt;&#10;    &lt;h2&gt;Transactions&lt;/h2&gt;&#10;    &#10;        &lt;ul&gt;&#10;            &#10;                &lt;li&gt;&#10;                    &lt;strong&gt;#1:&lt;/strong&gt;&#10;                    Salary ($1500.00)&#10;                    &lt;a href=&quot;/transactions/1&quot;&gt;Edit&lt;/a&gt;&#10;                    &lt;form method=&quot;post&quot;&#10;                          action=&quot;/transactions/1/delete&quot;&gt;&#10;                        &lt;input type=&quot;hidden&quot; name=&quot;csrfToken&quot; value=&quot;NbWuYAeMavIC3r7fO3vfdel-w1gjYzLHnkllPv8FzRE&quot;&gt;&#10;                        &lt;button type=&quot;submit&quot;&gt;Delete&lt;/button&gt;&#10;                    &lt;/form&gt;&#10;                &lt;/li&gt;&#10;            &#10;                &lt;li&gt;&#10;                    &lt;strong&gt;#2:&lt;/strong&gt;&#10;                    Groceries ($-249.50)&#10;                    &lt;a href=&quot;/transactions/2&quot;&gt;Edit&lt;/a&gt;&#10;                    &lt;form method=&quot;post&quot;&#10;                          action=&quot;/transactions/2/delete&quot;&gt;&#10;                        &lt;input type=&quot;hidden&quot; name=&quot;csrfToken&quot; value=&quot;NbWuYAeMavIC3r7fO3vfdel-w1gjYzLHnkllPv8FzRE&quot;&gt;&#10;                        &lt;button type=&quot;submit&quot;&gt;Delete&lt;/button&gt;&#10;                    &lt;/form&gt;&#10;                &lt;/li&gt;&#10;            &#10;        &lt;/ul&gt;&#10;    &#10;&lt;/section&gt;&#10;&#10;    &#10;    &lt;/main&gt;&#10;&lt;/body&gt;&#10;&lt;/html&gt;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account</title>
+</head>
+<body>
+    <header>
+        <h1>My Account</h1>
+    </header>
+
+    <main>
+        
+        
+<section>
+    <h2>Enock's account</h2>
+    <p>Balance: <strong>$1,250.50</strong></p>
+</section>
+        <form method="post" action="/logout">
+            <input type="hidden" name="csrfToken" value="NbWuYAeMavIC3r7fO3vfdel-w1gjYzLHnkllPv8FzRE">
+            <button type="submit">Log Out</button>
+        </form>
+    
+        
+        <section>
+            <h2>Add transaction</h2>
+            <p>Use a positive amount for a deposit and a negative amount for a withdrawal.</p>
+            <form method="post" action="/transactions">
+                <input type="hidden" name="csrfToken" value="NbWuYAeMavIC3r7fO3vfdel-w1gjYzLHnkllPv8FzRE">
+                <p>
+                    <label for="description">Description</label>
+                    <input id="description" name="description" type="text"
+                           maxlength="120" required>
+                </p>
+                <p>
+                    <label for="amount">Amount</label>
+                    <input id="amount" name="amount" type="number"
+                           step="0.01" required>
+                </p>
+                <button type="submit">Save transaction</button>
+            </form>
+        </section>
+        
+<section>
+    <h2>Transactions</h2>
+    
+        <ul>
+            
+                <li>
+                    <strong>#1:</strong>
+                    Salary ($1500.00)
+                    <a href="/transactions/1">Edit</a>
+                    <form method="post"
+                          action="/transactions/1/delete">
+                        <input type="hidden" name="csrfToken" value="NbWuYAeMavIC3r7fO3vfdel-w1gjYzLHnkllPv8FzRE">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            
+                <li>
+                    <strong>#2:</strong>
+                    Groceries ($-249.50)
+                    <a href="/transactions/2">Edit</a>
+                    <form method="post"
+                          action="/transactions/2/delete">
+                        <input type="hidden" name="csrfToken" value="NbWuYAeMavIC3r7fO3vfdel-w1gjYzLHnkllPv8FzRE">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            
+        </ul>
+    
+</section>
+
+    
+    </main>
+</body>
+</html>
+	at edu.cwi.SecurityTest.eachUserSeesTheirOwnAccountThroughTheLayout(SecurityTest.java:165)
+]]></failure>
+    <system-err><![CDATA[[main] INFO io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompressMaxSize=-1, aliasCheck=null, headers={Cache-Control=max-age=0}, skipFileFunction=null, mimeTypes={}, roles=[]). File system location: 'file:///Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/classes/public/'
+[main] INFO io.javalin.Javalin - Starting Javalin ...
+[main] INFO org.eclipse.jetty.server.Server - jetty-12.1.12; built: 2026-08-03T22:37:55.389Z; git: 10dd3948f37767b84cc2c62358364f042e51dbbe; jvm 25.0.2+10-69
+[main] INFO org.eclipse.jetty.session.DefaultSessionIdManager - Session workerName=node0
+[main] INFO org.eclipse.jetty.server.handler.ContextHandler - Started oeje10s.ServletContextHandler@5b529706{ROOT,/,b=null,a=AVAILABLE,h=oeje10s.SessionHandler@63fdab07{STARTED}}
+[main] INFO org.eclipse.jetty.ee10.servlet.ServletContextHandler - Started oeje10s.ServletContextHandler@5b529706{ROOT,/,b=null,a=AVAILABLE,h=oeje10s.SessionHandler@63fdab07{STARTED}}
+[main] INFO org.eclipse.jetty.server.AbstractConnector - Started oejs.ServerConnector@1e8325d3{HTTP/1.1, (http/1.1)}{0.0.0.0:51596}
+[main] INFO org.eclipse.jetty.server.Server - Started oejs.Server@7b5a12ae{STARTING}[12.1.12,sto=0] @2ms
+[main] INFO io.javalin.Javalin - 
+       __                  ___          _____
+      / /___ __   ______ _/ (_)___     /__  /
+ __  / / __ `/ | / / __ `/ / / __ \      / /
+/ /_/ / /_/ /| |/ / /_/ / / / / / /     / /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/     /_/
+
+       https://javalin.io/documentation
+
+[main] INFO io.javalin.Javalin - Javalin started in 3ms \o/
+[main] INFO io.javalin.Javalin - Listening on http://localhost:51596/
+[main] INFO io.javalin.Javalin - You are running Javalin 7.2.3 (released August 11, 2026).
+[main] INFO io.javalin.Javalin - Stopping Javalin ...
+[main] INFO org.eclipse.jetty.server.Server - Stopped oejs.Server@7b5a12ae{STOPPING}[12.1.12,sto=0]
+[main] INFO org.eclipse.jetty.server.AbstractConnector - Stopped oejs.ServerConnector@1e8325d3{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+[main] INFO org.eclipse.jetty.ee10.servlet.ServletContextHandler - Stopped oeje10s.ServletContextHandler@5b529706{ROOT,/,b=null,a=AVAILABLE,h=oeje10s.SessionHandler@63fdab07{STOPPED}}
+[main] INFO io.javalin.Javalin - Javalin has stopped
+]]></system-err>
+  </testcase>
+  <testcase name="bothUsersCanLogOutAndOldCookiesStopWorking" classname="edu.cwi.SecurityTest" time="0.142">
+    <failure message="Page needs a hidden form token" type="java.lang.AssertionError">java.lang.AssertionError: Page needs a hidden form token
+	at edu.cwi.SecurityTest.token(SecurityTest.java:100)
+	at edu.cwi.SecurityTest.bothUsersCanLogOutAndOldCookiesStopWorking(SecurityTest.java:236)
+</failure>
+    <system-err><![CDATA[[main] INFO io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompressMaxSize=-1, aliasCheck=null, headers={Cache-Control=max-age=0}, skipFileFunction=null, mimeTypes={}, roles=[]). File system location: 'file:///Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/target/classes/public/'
+[main] INFO io.javalin.Javalin - Starting Javalin ...
+[main] INFO org.eclipse.jetty.server.Server - jetty-12.1.12; built: 2026-08-03T22:37:55.389Z; git: 10dd3948f37767b84cc2c62358364f042e51dbbe; jvm 25.0.2+10-69
+[main] INFO org.eclipse.jetty.session.DefaultSessionIdManager - Session workerName=node0
+[main] INFO org.eclipse.jetty.server.handler.ContextHandler - Started oeje10s.ServletContextHandler@e98770d{ROOT,/,b=null,a=AVAILABLE,h=oeje10s.SessionHandler@1ae67cad{STARTED}}
+[main] INFO org.eclipse.jetty.ee10.servlet.ServletContextHandler - Started oeje10s.ServletContextHandler@e98770d{ROOT,/,b=null,a=AVAILABLE,h=oeje10s.SessionHandler@1ae67cad{STARTED}}
+[main] INFO org.eclipse.jetty.server.AbstractConnector - Started oejs.ServerConnector@35182945{HTTP/1.1, (http/1.1)}{0.0.0.0:51605}
+[main] INFO org.eclipse.jetty.server.Server - Started oejs.Server@2f6e28bc{STARTING}[12.1.12,sto=0] @2ms
+[main] INFO io.javalin.Javalin - 
+       __                  ___          _____
+      / /___ __   ______ _/ (_)___     /__  /
+ __  / / __ `/ | / / __ `/ / / __ \      / /
+/ /_/ / /_/ /| |/ / /_/ / / / / / /     / /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/     /_/
+
+       https://javalin.io/documentation
+
+[main] INFO io.javalin.Javalin - Javalin started in 3ms \o/
+[main] INFO io.javalin.Javalin - Listening on http://localhost:51605/
+[main] INFO io.javalin.Javalin - You are running Javalin 7.2.3 (released August 11, 2026).
+[JettyServerThreadPool-92] WARN io.javalin.Javalin - Uncaught exception
+gg.jte.TemplateException: Failed to compile template, error at
+error: error reading /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/jte-classes/gg/jte/generated/ondemand/JteaccountPageGenerated.java; /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/jte-classes/gg/jte/generated/ondemand/JteaccountPageGenerated.java
+error: error reading /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/jte-classes/gg/jte/generated/ondemand/JteaccountLayoutGenerated.java; /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/jte-classes/gg/jte/generated/ondemand/JteaccountLayoutGenerated.java
+error: error reading /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/jte-classes/gg/jte/generated/ondemand/JteuserAccountGenerated.java; /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/jte-classes/gg/jte/generated/ondemand/JteuserAccountGenerated.java
+error: error reading /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/jte-classes/gg/jte/generated/ondemand/JtetransactionsListGenerated.java; /Users/enockmasengesho/Documents/Github_Enock/CWI-SWDV-235-Enock/bank/jte-classes/gg/jte/generated/ondemand/JtetransactionsListGenerated.java
+4 errors
+
+	at gg.jte.compiler.java.JavaClassCompiler.runCompiler(JavaClassCompiler.java:51)
+	at gg.jte.compiler.java.JavaClassCompiler.compile(JavaClassCompiler.java:40)
+	at gg.jte.compiler.TemplateCompiler.precompileClasses(TemplateCompiler.java:114)
+	at gg.jte.compiler.TemplateCompiler.precompile(TemplateCompiler.java:94)
+	at gg.jte.compiler.TemplateCompiler.load(TemplateCompiler.java:50)
+	at gg.jte.TemplateEngine.lambda$resolveTemplateOnDemand$0(TemplateEngine.java:354)
+	at java.base/java.util.concurrent.ConcurrentHashMap.compute(ConcurrentHashMap.java:1932)
+	at gg.jte.TemplateEngine.resolveTemplateOnDemand(TemplateEngine.java:347)
+	at gg.jte.TemplateEngine.resolveTemplate(TemplateEngine.java:337)
+	at gg.jte.TemplateEngine.render(TemplateEngine.java:228)
+	at io.javalin.rendering.template.JavalinJte.render(JavalinJte.kt:24)
+	at io.javalin.http.Context.render(Context.kt:520)
+	at edu.cwi.TransactionsController.getAll(TransactionsController.java:26)
+	at io.javalin.router.ParsedEndpoint.handleWithPathParams$javalin(ParsedEndpoint.kt:21)
+	at io.javalin.router.ParsedEndpoint.handle(ParsedEndpoint.kt:15)
+	at io.javalin.http.servlet.DefaultTasks.HTTP$lambda$0$1(DefaultTasks.kt:57)
+	at io.javalin.http.servlet.JavalinServlet.handleTask(JavalinServlet.kt:108)
+	at io.javalin.http.servlet.JavalinServlet.handleSync(JavalinServlet.kt:72)
+	at io.javalin.http.servlet.JavalinServlet.handle(JavalinServlet.kt:58)
+	at io.javalin.http.servlet.JavalinServlet.service(JavalinServlet.kt:38)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)
+	at io.javalin.jetty.JavalinJettyServlet.service(JavalinJettyServlet.kt:49)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)
+	at org.eclipse.jetty.ee10.servlet.ServletHolder.handle(ServletHolder.java:754)
+	at org.eclipse.jetty.ee10.servlet.ServletHandler$ChainEnd.doFilter(ServletHandler.java:1642)
+	at org.eclipse.jetty.ee10.servlet.ServletHandler$MappedServlet.handle(ServletHandler.java:1556)
+	at org.eclipse.jetty.ee10.servlet.ServletChannel.dispatch(ServletChannel.java:871)
+	at org.eclipse.jetty.ee10.servlet.ServletChannel.handle(ServletChannel.java:449)
+	at org.eclipse.jetty.ee10.servlet.ServletHandler.handle(ServletHandler.java:469)
+	at org.eclipse.jetty.ee10.servlet.SessionHandler.handle(SessionHandler.java:719)
+	at org.eclipse.jetty.server.handler.ContextHandler.handle(ContextHandler.java:1253)
+	at org.eclipse.jetty.server.Handler$Wrapper.handle(Handler.java:794)
+	at org.eclipse.jetty.server.handler.EventsHandler.handle(EventsHandler.java:81)
+	at org.eclipse.jetty.server.Server.handle(Server.java:197)
+	at org.eclipse.jetty.server.internal.HttpChannelState$HandlerInvoker.run(HttpChannelState.java:804)
+	at org.eclipse.jetty.server.internal.HttpConnection.onFillable(HttpConnection.java:420)
+	at org.eclipse.jetty.server.internal.HttpConnection$FillableCallback.succeeded(HttpConnection.java:1790)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:105)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:54)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:1009)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1240)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1194)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+[main] INFO io.javalin.Javalin - Stopping Javalin ...
+[main] INFO org.eclipse.jetty.server.Server - Stopped oejs.Server@2f6e28bc{STOPPING}[12.1.12,sto=0]
+[main] INFO org.eclipse.jetty.server.AbstractConnector - Stopped oejs.ServerConnector@35182945{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+[main] INFO org.eclipse.jetty.ee10.servlet.ServletContextHandler - Stopped oeje10s.ServletContextHandler@e98770d{ROOT,/,b=null,a=AVAILABLE,h=oeje10s.SessionHandler@1ae67cad{STOPPED}}
+[main] INFO io.javalin.Javalin - Javalin has stopped
+]]></system-err>
+  </testcase>
+  <testcase name="loginRejectsBadCredentialsAndMissingFormToken" classname="edu.cwi.SecurityTest" time="0.099"/>
+</testsuite>

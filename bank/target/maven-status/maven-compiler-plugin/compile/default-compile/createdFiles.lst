@@ -1,0 +1,8 @@
+edu/cwi/Main.class
+edu/cwi/UserAccount.class
+edu/cwi/Account.class
+edu/cwi/AppRole.class
+edu/cwi/TransactionsController.class
+edu/cwi/Transaction.class
+edu/cwi/AuthController$LoginSession.class
+edu/cwi/AuthController.class

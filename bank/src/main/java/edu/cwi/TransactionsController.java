@@ -1,168 +1,125 @@
 package edu.cwi;
 
+import static j2html.TagCreator.*;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.javalin.apibuilder.CrudHandler;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
-import static j2html.TagCreator.a;
-import static j2html.TagCreator.body;
-import static j2html.TagCreator.br;
-import static j2html.TagCreator.button;
-import static j2html.TagCreator.div;
-import static j2html.TagCreator.form;
-import static j2html.TagCreator.h1;
-import static j2html.TagCreator.head;
-import static j2html.TagCreator.html;
-import static j2html.TagCreator.input;
-import static j2html.TagCreator.label;
-import static j2html.TagCreator.meta;
-import static j2html.TagCreator.p;
-import static j2html.TagCreator.title;
 import j2html.tags.DomContent;
 
-
 public class TransactionsController implements CrudHandler {
+    private final AuthController auth;
 
-   
-    private final Map<Integer, TransactionData> transactions =
-            new ConcurrentSkipListMap<>();
-
-    private final AtomicInteger nextId = new AtomicInteger(1);
-
-    public  record TransactionData(
-            int id, String description, BigDecimal amount) {
+    public TransactionsController(AuthController auth) {
+        this.auth = auth;
     }
 
     @Override
     public void getAll(Context ctx) {
-        ctx.render("transactionsPage.jte", Map.of(
-            "transactions", List.copyOf(transactions.values())
+       
+        UserAccount account = auth.requireAccount(ctx).view();
+        ctx.render("accountPage.jte", Map.of(
+                "title", "My Account",
+                "account", account,
+                "csrfToken", auth.csrfToken(ctx)
         ));
     }
-    
+
     @Override
     public void getOne(Context ctx, String resourceId) {
-        TransactionData transaction = transactions.get(parseId(resourceId));
-
+        Transaction transaction = auth.requireAccount(ctx)
+                .findTransaction(parseId(resourceId));
         if (transaction == null) {
             throw new NotFoundResponse("Transaction not found.");
         }
-
         ctx.html(page("Transaction " + transaction.id(),
                 transactionForm(
                         "/transactions/" + transaction.id() + "/update",
                         transaction.description(),
-                        transaction.amount().toPlainString()
+                        transaction.amount().toPlainString(),
+                        auth.csrfToken(ctx)
                 ),
-                p(a("Back to transactions").withHref("/transactions"))
+                p(a("Back to account").withHref("/account"))
         ));
     }
 
     @Override
     public void create(Context ctx) {
-        TransactionData transaction =
-                readTransaction(ctx, nextId.getAndIncrement());
-
-        transactions.put(transaction.id(), transaction);
-
-        ctx.redirect("/transactions", HttpStatus.SEE_OTHER);
+        Account account = auth.requireAccount(ctx);
+        Transaction input = readTransaction(ctx, 0);
+        account.addTransaction(input.description(), input.amount());
+        ctx.redirect("/account", HttpStatus.SEE_OTHER);
     }
 
     @Override
     public void update(Context ctx, String resourceId) {
+        Account account = auth.requireAccount(ctx);
         int id = parseId(resourceId);
-        TransactionData updated = readTransaction(ctx, id);
-
-        if (transactions.replace(id, updated) == null) {
+        Transaction input = readTransaction(ctx, id);
+        if (!account.updateTransaction(id, input.description(), input.amount())) {
             throw new NotFoundResponse("Transaction not found.");
         }
-
-        ctx.redirect("/transactions", HttpStatus.SEE_OTHER);
+        ctx.redirect("/account", HttpStatus.SEE_OTHER);
     }
 
     @Override
     public void delete(Context ctx, String resourceId) {
-        if (transactions.remove(parseId(resourceId)) == null) {
+        if (!auth.requireAccount(ctx).deleteTransaction(parseId(resourceId))) {
             throw new NotFoundResponse("Transaction not found.");
         }
-
-        ctx.redirect("/transactions", HttpStatus.SEE_OTHER);
+        ctx.redirect("/account", HttpStatus.SEE_OTHER);
     }
 
     private int parseId(String resourceId) {
         try {
             int id = Integer.parseInt(resourceId);
-
             if (id > 0) {
                 return id;
             }
         } catch (NumberFormatException ignored) {
         }
-
-        throw new BadRequestResponse(
-                "Transaction ID must be a positive integer."
-        );
+        throw new BadRequestResponse("Transaction ID must be a positive integer.");
     }
 
-    private TransactionData readTransaction(Context ctx, int id) {
+    private Transaction readTransaction(Context ctx, int id) {
         String description = ctx.formParam("description");
         String amountText = ctx.formParam("amount");
-
         if (description == null || description.isBlank()
                 || description.trim().length() > 120) {
-            throw new BadRequestResponse(
-                    "Enter a description of 1 to 120 characters."
-            );
+            throw new BadRequestResponse("Enter a description of 1 to 120 characters.");
         }
-
         try {
             BigDecimal amount = new BigDecimal(
                     amountText == null ? "" : amountText.trim()
             ).setScale(2, RoundingMode.UNNECESSARY);
-
-            return new TransactionData(id, description.trim(), amount);
-
+            return new Transaction(id, description.trim(), amount);
         } catch (NumberFormatException | ArithmeticException e) {
             throw new BadRequestResponse(
-                    "Enter an amount with at most two decimal places."
-            );
+                    "Enter an amount with at most two decimal places.");
         }
     }
 
     private DomContent transactionForm(
-            String action, String description, String amount) {
-
+            String action, String description, String amount, String csrfToken) {
         return form(
-            p(
-                label("Description").withFor("description"),
-                br(),
-                input()
-                    .withId("description")
-                    .withName("description")
-                    .withType("text")
-                    .withValue(description)
-                    .attr("maxlength", "120")
-                    .isRequired()
-            ),
-
-            p(
-                label("Amount").withFor("amount"),
-                br(),
-                input()
-                    .withId("amount")
-                    .withName("amount")
-                    .withType("number")
-                    .withValue(amount)
-                    .attr("step", "0.01")
-                    .isRequired()
+                input().withType("hidden").withName("csrfToken")
+                        .withValue(csrfToken),
+                p(
+                        label("Description").withFor("description"), br(),
+                        input().withId("description").withName("description")
+                                .withType("text").withValue(description)
+                                .attr("maxlength", "120").isRequired()
+                ),
+                p(
+                        label("Amount").withFor("amount"), br(),
+                        input().withId("amount").withName("amount")
+                                .withType("number").withValue(amount)
+                                .attr("step", "0.01").isRequired()
                 ),
                 button("Save transaction").withType("submit")
         ).withMethod("post").withAction(action);
@@ -170,14 +127,9 @@ public class TransactionsController implements CrudHandler {
 
     private String page(String heading, DomContent... content) {
         return "<!DOCTYPE html>" + html(
-                head(
-                        meta().attr("charset", "UTF-8"),
-                        title(heading)
-                ),
-                body(
-                        h1(heading),
-                        div(content)
-                )
+                head(meta().attr("charset", "UTF-8"), title(heading)),
+                body(h1(heading), div(content))
         ).render();
     }
 }
+

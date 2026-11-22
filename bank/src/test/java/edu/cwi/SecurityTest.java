@@ -266,7 +266,6 @@ public class SecurityTest {
     public void finalInsertFailureRollsBackUserAndAccount() throws Exception {
         Browser admin = admin();
 
-        // Reject the $5 opening deposit in this test's database.
         try (Connection connection = source.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(
@@ -276,7 +275,6 @@ public class SecurityTest {
         HttpResponse<String> response = admin.json("POST", "/users", newUser("rollback"));
         assertEquals(response.body(), 409, response.statusCode());
 
-        // Only the seeded admin should remain after the rollback.
         assertEquals(1, count("users"));
         assertEquals(0, count("accounts"));
         assertEquals(0, count("transactions"));

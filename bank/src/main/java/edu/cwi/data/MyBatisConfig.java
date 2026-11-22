@@ -18,7 +18,7 @@ public final class MyBatisConfig implements AutoCloseable {
     private final DataSource dataSource;
     private final SqlSessionFactory factory;
 
-    // DataSource injection lets tests use an isolated database.
+  
     public MyBatisConfig(DataSource dataSource) {
         this.dataSource = dataSource;
         Environment environment = new Environment(
@@ -61,7 +61,6 @@ public final class MyBatisConfig implements AutoCloseable {
         return factory.openSession(false);
     }
 
-    // Every operation in work shares one connection and one transaction.
     public <T> T write(Function<SqlSession, T> work) {
         try (SqlSession session = openSession()) {
             try {

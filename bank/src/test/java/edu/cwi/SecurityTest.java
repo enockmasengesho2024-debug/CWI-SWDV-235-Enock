@@ -1,92 +1,177 @@
 package edu.cwi;
 
-import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.ibatis.session.SqlSession;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.cwi.data.AccountMapper;
+import edu.cwi.data.MyBatisConfig;
+import edu.cwi.data.TransactionMapper;
+import edu.cwi.data.UserMapper;
 import io.javalin.Javalin;
 
 public class SecurityTest {
+    private static final ObjectMapper JSON = new ObjectMapper();
+    private static final String ADMIN_PASSWORD = "AdminPass123!";
+    private static final String ADMIN_HASH = Passwords.hash(ADMIN_PASSWORD);
+
+    private JdbcDataSource source;
+    private MyBatisConfig database;
     private Javalin app;
     private String baseUrl;
 
     @Before
-    public void startApp() {
-        app = Main.createApp().start(0);
+    public void start() throws Exception {
+        source = new JdbcDataSource();
+        source.setURL("jdbc:h2:mem:bank_" + UUID.randomUUID()
+                + ";MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1");
+        source.setUser("sa");
+
+        String sql = Files.readString(Path.of("database", "online_bank.sql"))
+                .replaceAll("(?m)^\\s*--.*$", "");
+
+        try (Connection connection = source.getConnection();
+             Statement statement = connection.createStatement()) {
+            for (String part : sql.split(";")) {
+                String command = part.trim();
+
+                if (command.isEmpty()
+                        || command.startsWith("DROP DATABASE")
+                        || command.startsWith("CREATE DATABASE")
+                        || command.startsWith("USE ")) {
+                    continue;
+                }
+
+                statement.execute(command);
+            }
+        }
+
+        database = new MyBatisConfig(source);
+        database.write(session -> {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            User admin = mapper.findByUsername("admin");
+
+            assertFalse(Passwords.matches(ADMIN_PASSWORD, admin.getPassword()));
+            admin.setPassword(ADMIN_HASH);
+            mapper.update(admin);
+            return null;
+        });
+
+        app = Main.createApp(database).start(0);
         baseUrl = "http://localhost:" + app.port();
     }
 
     @After
-    public void stopApp() {
+    public void stop() throws Exception {
         if (app != null) {
             app.stop();
+        }
+
+        if (source != null) {
+            try (Connection connection = source.getConnection();
+                 Statement statement = connection.createStatement()) {
+                statement.execute("SHUTDOWN");
+            }
         }
     }
 
     private final class Browser {
-        private final CookieManager cookies =
+        final CookieManager cookies =
                 new CookieManager(null, CookiePolicy.ACCEPT_ALL);
-        private final HttpClient client = HttpClient.newBuilder()
+
+        final HttpClient client = HttpClient.newBuilder()
                 .cookieHandler(cookies)
                 .followRedirects(HttpClient.Redirect.NEVER)
                 .build();
 
-        HttpResponse<String> request(String method, String path,
-                                    Map<String, String> fields)
-                throws IOException, InterruptedException {
-            String body = fields.entrySet().stream()
-                    .map(e -> encode(e.getKey()) + "=" + encode(e.getValue()))
-                    .collect(Collectors.joining("&"));
-            HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(baseUrl + path));
-            if (method.equals("GET")) {
-                request.GET();
-            } else {
-                request.header("Content-Type", "application/x-www-form-urlencoded")
-                        .method(method, HttpRequest.BodyPublishers.ofString(body));
+        String csrf;
+
+        HttpResponse<String> request(
+                String method, String path, String body,
+                String contentType, boolean withToken) throws Exception {
+            HttpRequest.Builder builder =
+                    HttpRequest.newBuilder(URI.create(baseUrl + path));
+
+            if (contentType != null) {
+                builder.header("Content-Type", contentType);
             }
-            return client.send(request.build(), HttpResponse.BodyHandlers.ofString());
+
+            if (withToken && csrf != null) {
+                builder.header("X-CSRF-Token", csrf);
+            }
+
+            builder.method(method, body == null
+                    ? HttpRequest.BodyPublishers.noBody()
+                    : HttpRequest.BodyPublishers.ofString(body));
+
+            return client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
         }
 
         HttpResponse<String> get(String path) throws Exception {
-            return request("GET", path, Map.of());
+            return request("GET", path, null, null, false);
         }
 
-        HttpResponse<String> post(String path, Map<String, String> fields) throws Exception {
-            return request("POST", path, fields);
+        HttpResponse<String> json(String method, String path, Object body)
+                throws Exception {
+            String jsonBody = body == null ? null : JSON.writeValueAsString(body);
+            return request(method, path, jsonBody, "application/json", true);
+        }
+
+        HttpResponse<String> form(String path, Map<String, String> fields)
+                throws Exception {
+            String body = fields.entrySet().stream()
+                    .map(entry -> encode(entry.getKey()) + "=" + encode(entry.getValue()))
+                    .collect(Collectors.joining("&"));
+
+            return request("POST", path, body,
+                    "application/x-www-form-urlencoded", true);
+        }
+
+        void login(String username, String password) throws Exception {
+            HttpResponse<String> token = get("/auth/csrf");
+            assertEquals(token.body(), 200, token.statusCode());
+            csrf = JSON.readTree(token.body()).get("csrfToken").asText();
+
+            HttpResponse<String> login = form("/login?return=json",
+                    Map.of("username", username, "password", password));
+
+            assertEquals(login.body(), 200, login.statusCode());
+            csrf = JSON.readTree(login.body()).get("csrfToken").asText();
         }
 
         String cookie() {
             return cookies.getCookieStore().getCookies().stream()
-                    .filter(c -> c.getName().equals("cwi_session"))
-                    .findFirst().orElseThrow().getValue();
-        }
-
-        String login(String username, String password) throws Exception {
-            String token = token(get("/login").body());
-            String anonymousId = cookie();
-            HttpResponse<String> response = post("/login", Map.of(
-                    "username", username, "password", password, "csrfToken", token));
-            redirect(response, "/account");
-            assertFalse("Login must rotate the session ID", anonymousId.equals(cookie()));
-            return token(get("/account").body());
+                    .filter(cookie -> cookie.getName().equals("cwi_session"))
+                    .findFirst()
+                    .orElseThrow()
+                    .getValue();
         }
     }
 
@@ -94,158 +179,259 @@ public class SecurityTest {
         return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
-    private static String token(String html) {
-        Matcher matcher = Pattern.compile(
-                "name=\"csrfToken\" value=\"([^\"]+)\"").matcher(html);
-        assertTrue("Page needs a hidden form token", matcher.find());
-        return matcher.group(1);
+    private Browser admin() throws Exception {
+        Browser browser = new Browser();
+        browser.login("admin", ADMIN_PASSWORD);
+        return browser;
     }
 
-    private static void redirect(HttpResponse<String> response, String location) {
-        assertEquals(response.body(), 303, response.statusCode());
-        assertEquals(location, response.headers().firstValue("Location").orElse(""));
+    private Map<String, Object> newUser(String username) {
+        return Map.of(
+                "username", username,
+                "password", "Password123!",
+                "email", username + "@example.com",
+                "firstName", username,
+                "lastName", "Customer",
+                "role", "CUSTOMER"
+        );
     }
 
-    private HttpResponse<String> withCookie(String cookie, String path) throws Exception {
-        return HttpClient.newHttpClient().send(
-                HttpRequest.newBuilder(URI.create(baseUrl + path))
-                        .header("Cookie", "cwi_session=" + cookie).GET().build(),
+    private long create(Browser admin, String username) throws Exception {
+        HttpResponse<String> response =
+                admin.json("POST", "/users?return=json", newUser(username));
+
+        assertEquals(response.body(), 201, response.statusCode());
+        assertFalse(response.body(), response.body().contains("password"));
+        return JSON.readTree(response.body()).get("id").asLong();
+    }
+
+    private Account account(long userId) {
+        try (SqlSession session = database.openSession()) {
+            return session.getMapper(AccountMapper.class)
+                    .findByUserId(userId)
+                    .get(0);
+        }
+    }
+
+    private long count(String table) throws Exception {
+        try (Connection connection = source.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery("SELECT COUNT(*) FROM " + table)) {
+            rows.next();
+            return rows.getLong(1);
+        }
+    }
+
+    @Test
+    public void usersCrudReturnsJsonAndNeverReturnsPasswords() throws Exception {
+        Browser admin = admin();
+        long id = create(admin, "enock");
+
+        assertEquals(2, count("users"));
+        assertEquals(1, count("accounts"));
+        assertEquals(1, count("transactions"));
+        assertEquals("5.00", account(id).getBalance().toPlainString());
+
+        User stored = new UsersController(database).findUser(id);
+        assertTrue(stored.getPassword().startsWith("$2a$"));
+        assertTrue(Passwords.matches("Password123!", stored.getPassword()));
+
+        HttpResponse<String> all = admin.get("/users");
+        assertEquals(200, all.statusCode());
+        assertTrue(all.headers().firstValue("Content-Type")
+                .orElse("").startsWith("application/json"));
+        assertFalse(all.body().contains("password"));
+        assertFalse(all.body().contains("$2a$"));
+
+        HttpResponse<String> one = admin.get("/users/" + id);
+        assertEquals(200, one.statusCode());
+        assertEquals("enock", JSON.readTree(one.body()).get("username").asText());
+
+        HttpResponse<String> update = admin.json("PATCH", "/users/" + id,
+                Map.of("firstName", "Updated"));
+        assertEquals(update.body(), 200, update.statusCode());
+        assertEquals("Updated", JSON.readTree(update.body()).get("firstName").asText());
+
+        HttpResponse<String> deleted = admin.json("DELETE", "/users/" + id, null);
+        assertEquals(deleted.body(), 200, deleted.statusCode());
+        assertTrue(JSON.readTree(deleted.body()).get("deleted").asBoolean());
+
+        assertEquals(1, count("users"));
+        assertEquals(0, count("accounts"));
+        assertEquals(0, count("transactions"));
+        assertEquals(404, admin.get("/users/" + id).statusCode());
+    }
+
+    @Test
+    public void finalInsertFailureRollsBackUserAndAccount() throws Exception {
+        Browser admin = admin();
+
+        // Reject the $5 opening deposit in this test's database.
+        try (Connection connection = source.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(
+                    "ALTER TABLE transactions ADD CONSTRAINT test_maximum CHECK(amount < 5)");
+        }
+
+        HttpResponse<String> response = admin.json("POST", "/users", newUser("rollback"));
+        assertEquals(response.body(), 409, response.statusCode());
+
+        // Only the seeded admin should remain after the rollback.
+        assertEquals(1, count("users"));
+        assertEquals(0, count("accounts"));
+        assertEquals(0, count("transactions"));
+
+        try (SqlSession session = database.openSession()) {
+            assertNull(session.getMapper(UserMapper.class).findByUsername("rollback"));
+        }
+    }
+
+    @Test
+    public void validationAndDuplicatesDoNotCreatePartialRecords() throws Exception {
+        Browser admin = admin();
+        create(admin, "duplicate");
+
+        assertEquals(409, admin.json("POST", "/users", newUser("duplicate")).statusCode());
+        assertEquals(400, admin.json("POST", "/users", newUser("")).statusCode());
+        assertEquals(400, admin.json("POST", "/users", newUser("a".repeat(51))).statusCode());
+
+        Map<String, Object> missing = new HashMap<>(newUser("missing"));
+        missing.remove("email");
+        assertEquals(400, admin.json("POST", "/users", missing).statusCode());
+
+        assertEquals(2, count("users"));
+        assertEquals(1, count("accounts"));
+        assertEquals(1, count("transactions"));
+    }
+
+    @Test
+    public void databaseLoginRolesAndCookieForgeryAreChecked() throws Exception {
+        Browser visitor = new Browser();
+        assertEquals(401, visitor.get("/users").statusCode());
+
+        HttpResponse<String> invalidSession = HttpClient.newHttpClient().send(
+                HttpRequest.newBuilder(URI.create(baseUrl + "/users"))
+                        .header("Cookie", "cwi_session=invalid-test-session")
+                        .GET()
+                        .build(),
                 HttpResponse.BodyHandlers.ofString());
-    }
 
-    @Test
-    public void anonymousVisitorsCannotUseProtectedRoutes() throws Exception {
-        Browser visitor = new Browser();
-        for (String path : new String[] {
-                "/account", "/account.html", "/transactions", "/transactions/1"}) {
-            redirect(visitor.get(path), "/login");
-        }
-        for (String path : new String[] {
-                "/transactions", "/transactions/1/update",
-                "/transactions/1/delete", "/logout"}) {
-            redirect(visitor.post(path, Map.of()), "/login");
-        }
-        redirect(visitor.request("PATCH", "/transactions/1", Map.of()), "/login");
-        redirect(visitor.request("DELETE", "/transactions/1", Map.of()), "/login");
-        redirect(withCookie("enock", "/account"), "/login");
-    }
+        assertEquals(401, invalidSession.statusCode());
 
-    @Test
-    public void loginRejectsBadCredentialsAndMissingFormToken() throws Exception {
-        Browser visitor = new Browser();
-        HttpResponse<String> page = visitor.get("/login");
-        String cookieHeader = page.headers().firstValue("Set-Cookie").orElse("");
-        assertTrue(cookieHeader, cookieHeader.contains("HttpOnly"));
-        assertTrue(cookieHeader, cookieHeader.contains("SameSite=Lax"));
-        assertTrue(cookieHeader, cookieHeader.contains("Path=/"));
-        assertTrue(cookieHeader, cookieHeader.contains("Max-Age=1800"));
-        assertFalse(cookieHeader, cookieHeader.contains("Enock123!"));
+        Browser admin = admin();
+        create(admin, "alice");
 
-        assertEquals(403, visitor.post("/login", Map.of(
-                "username", "enock", "password", "Enock123!")).statusCode());
-        HttpResponse<String> bad = visitor.post("/login", Map.of(
-                "username", "enock", "password", "wrong",
-                "csrfToken", token(page.body())));
-        assertEquals(401, bad.statusCode());
-        assertTrue(bad.body().contains("Incorrect username or password."));
-        redirect(visitor.get("/account"), "/login");
-    }
-
-    @Test
-    public void eachUserSeesTheirOwnAccountThroughTheLayout() throws Exception {
-        Browser enock = new Browser();
         Browser alice = new Browser();
-        enock.login("enock", "Enock123!");
-        alice.login("alice", "Alice123!");
-        String first = enock.get("/account").body();
-        String second = alice.get("/account").body();
+        alice.login("alice", "Password123!");
+        assertEquals(403, alice.get("/users").statusCode());
+        assertEquals(403, alice.json("POST", "/users", newUser("illegal")).statusCode());
 
-        assertTrue(first, first.contains("<title>My Account</title>"));
-        assertTrue(first, first.contains("Enock's account"));
-        assertTrue(first, first.contains("$5,250.50"));
-        assertTrue(first, first.contains("Salary"));
-        assertFalse(first, first.contains("Books"));
-        assertTrue(second, second.contains("Alice's account"));
-        assertTrue(second, second.contains("$2,914.25"));
-        assertTrue(second, second.contains("Books"));
-        assertFalse(second, second.contains("Salary"));
-        assertEquals(200, enock.get("/transactions").statusCode());
-        assertTrue(first, first.contains("action=\"/logout\""));
-        assertEquals("no-store", enock.get("/account").headers()
-                .firstValue("Cache-Control").orElse(""));
+        HttpResponse<String> token = visitor.get("/auth/csrf");
+        visitor.csrf = JSON.readTree(token.body()).get("csrfToken").asText();
+
+        assertEquals(401, visitor.form("/login",
+                Map.of("username", "alice", "password", "wrong")).statusCode());
+
+        assertEquals(403, admin.request("POST", "/users",
+                JSON.writeValueAsString(newUser("csrf")),
+                "application/json", false).statusCode());
     }
 
     @Test
-    public void formsUpdateOnlyTheLoggedInUsersLedger() throws Exception {
+    public void layoutsLedgerAndAccountOwnershipUseDatabaseRecords() throws Exception {
+        Browser admin = admin();
+        long enockId = create(admin, "enock");
+        long aliceId = create(admin, "alice");
+        Account enockAccount = account(enockId);
+
         Browser enock = new Browser();
+        enock.login("enock", "Password123!");
+
         Browser alice = new Browser();
-        String enockToken = enock.login("enock", "Enock123!");
-        String aliceToken = alice.login("alice", "Alice123!");
+        alice.login("alice", "Password123!");
 
-        assertEquals(403, enock.post("/transactions", Map.of(
-                "description", "Blocked", "amount", "10")).statusCode());
-        assertEquals(403, enock.post("/transactions", Map.of(
-                "description", "Blocked", "amount", "10",
-                "csrfToken", aliceToken)).statusCode());
+        HttpResponse<String> page = enock.get("/account");
+        assertEquals(page.body(), 200, page.statusCode());
+        assertTrue(page.body(), page.body().contains("enock Customer"));
+        assertTrue(page.body(), page.body().contains("$5.00"));
+        assertTrue(page.body(), page.body().contains("<title>My Account</title>"));
+        assertTrue(page.body(), page.body().contains("name=\"csrfToken\""));
 
-        redirect(enock.post("/transactions", Map.of(
-                "description", "Gift <script>demo</script>", "amount", "25",
-                "csrfToken", enockToken)), "/account");
-        String page = enock.get("/account").body();
-        assertTrue(page, page.contains("$1,275.50"));
-        assertTrue(page, page.contains("Gift &lt;script&gt;demo&lt;/script&gt;"));
-        assertFalse(page, page.contains("<script>"));
-        assertEquals(404, alice.get("/transactions/3").statusCode());
+        assertEquals(404, alice.get("/account?accountId=" + enockAccount.getId()).statusCode());
+        assertEquals(404, alice.form("/transactions", Map.of(
+                "accountId", enockAccount.getId().toString(),
+                "description", "Not mine",
+                "amount", "1"
+        )).statusCode());
 
-        assertEquals(404, alice.post("/transactions/3/update", Map.of(
-                "description", "Other user", "amount", "1",
-                "csrfToken", aliceToken)).statusCode());
-        assertEquals(404, alice.post("/transactions/3/delete",
-                Map.of("csrfToken", aliceToken)).statusCode());
-        assertFalse(alice.get("/account").body().contains("Gift"));
+        assertEquals(303, enock.form("/transactions", Map.of(
+                "accountId", enockAccount.getId().toString(),
+                "description", "Gift <script>demo</script>",
+                "amount", "25"
+        )).statusCode());
 
-        assertEquals(enockToken, token(enock.get("/transactions/3").body()));
-        redirect(enock.post("/transactions/3/update", Map.of(
-                "description", "Gift", "amount", "30",
-                "csrfToken", enockToken)), "/account");
-        assertTrue(enock.get("/account").body().contains("$1,280.50"));
+        assertEquals("30.00", account(enockId).getBalance().toPlainString());
+        assertTrue(enock.get("/account").body().contains("&lt;script&gt;"));
 
-        redirect(enock.request("PATCH", "/transactions/3", Map.of(
-                "description", "Gift", "amount", "40",
-                "csrfToken", enockToken)), "/account");
-        assertTrue(enock.get("/account").body().contains("$1,290.50"));
+        Transaction created;
+        try (SqlSession session = database.openSession()) {
+            List<Transaction> rows = session.getMapper(TransactionMapper.class)
+                    .findByAccountId(enockAccount.getId());
+            created = rows.get(rows.size() - 1);
+        }
 
-        redirect(enock.request("DELETE", "/transactions/3",
-                Map.of("csrfToken", enockToken)), "/account");
-        assertTrue(enock.get("/account").body().contains("$1,250.50"));
+        String transactionPath = "/transactions/" + created.getId();
+        assertEquals(404, alice.get(transactionPath).statusCode());
+        assertEquals(200, enock.get(transactionPath).statusCode());
 
-        redirect(enock.post("/transactions", Map.of(
-                "description", "Temporary", "amount", "1",
-                "csrfToken", enockToken)), "/account");
-        redirect(enock.post("/transactions/4/delete",
-                Map.of("csrfToken", enockToken)), "/account");
-        assertTrue(alice.get("/account").body().contains("$1,914.25"));
+        assertEquals(303, enock.form(transactionPath + "/update",
+                Map.of("description", "Gift", "amount", "30")).statusCode());
+        assertEquals("35.00", account(enockId).getBalance().toPlainString());
+
+        assertEquals(303, enock.form(transactionPath + "/delete", Map.of()).statusCode());
+        assertEquals("5.00", account(enockId).getBalance().toPlainString());
+        assertEquals("5.00", account(aliceId).getBalance().toPlainString());
+
+        assertEquals(400, enock.form("/transactions", Map.of(
+                "accountId", enockAccount.getId().toString(),
+                "description", "Too much",
+                "amount", "-1000"
+        )).statusCode());
+
+        assertEquals("5.00", account(enockId).getBalance().toPlainString());
     }
 
     @Test
-    public void bothUsersCanLogOutAndOldCookiesStopWorking() throws Exception {
-        for (String[] credentials : new String[][] {
-                {"enock", "Enock123!"}, {"alice", "Alice123!"}}) {
-            Browser browser = new Browser();
-            String token = browser.login(credentials[0], credentials[1]);
-            String oldCookie = browser.cookie();
-            redirect(withCookie(oldCookie + "tampered", "/account"), "/login");
-            assertEquals(403, browser.post("/logout", Map.of()).statusCode());
-            assertEquals(200, browser.get("/account").statusCode());
+    public void logoutPasswordChangeAndUserDeletionInvalidateSessions() throws Exception {
+        Browser admin = admin();
+        long id = create(admin, "customer");
 
-            HttpResponse<String> logout = browser.post(
-                    "/logout", Map.of("csrfToken", token));
-            redirect(logout, "/login");
-            String removedCookie = logout.headers().firstValue("Set-Cookie").orElse("");
-            assertEquals(removedCookie, 0,
-                    HttpCookie.parse(removedCookie).get(0).getMaxAge());
-            redirect(browser.get("/account"), "/login");
-            redirect(withCookie(oldCookie, "/account"), "/login");
-        }
+        Browser customer = new Browser();
+        customer.login("customer", "Password123!");
+        String oldCookie = customer.cookie();
+
+        assertEquals(403, customer.request("POST", "/logout", null, null, false).statusCode());
+        assertEquals(303, customer.form("/logout", Map.of()).statusCode());
+
+        HttpResponse<String> afterLogout = HttpClient.newHttpClient().send(
+                HttpRequest.newBuilder(URI.create(baseUrl + "/account"))
+                        .header("Cookie", "cwi_session=" + oldCookie)
+                        .GET()
+                        .build(),
+                HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(303, afterLogout.statusCode());
+        assertEquals("/login", afterLogout.headers().firstValue("Location").orElse(""));
+
+        customer.login("customer", "Password123!");
+        assertEquals(200, admin.json("PATCH", "/users/" + id,
+                Map.of("password", "Replacement123!")).statusCode());
+        assertEquals(303, customer.get("/account").statusCode());
+
+        customer.login("customer", "Replacement123!");
+        assertEquals(200, admin.json("DELETE", "/users/" + id, null).statusCode());
+        assertEquals(303, customer.get("/account").statusCode());
+
+        assertEquals(409, admin.json("DELETE", "/users/1", null).statusCode());
     }
 }

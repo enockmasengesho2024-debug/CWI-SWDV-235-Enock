@@ -1,0 +1,25 @@
+
+
+# List all users
+GET http://localhost:7071/users
+Cookie:"" ""
+
+# Get user 1
+GET http://localhost:7071/users/1
+Cookie:"" ""
+
+# Create Kennedy
+POST http://localhost:7071/users?return=json
+Content-Type: application/json
+Cookie:"" ""
+X-CSRF-Token:"" ""
+
+{
+  "username": "kennedy",
+  "password": "KennedyTest2026!",
+  "email": "kennedy@example.com",
+  "firstName": "Kennedy",
+  "lastName": "Jones",
+  "role": "CUSTOMER"
+}
+

@@ -95,6 +95,7 @@ public class Main {
 
                 get("/accounts", accountController::renderAccounts, USER);
                 get("/account/{id}", accountController::renderDetail, USER);
+                post("/transaction", transactions::create, USER);
 
                 path("/users", () -> {
                     get(users::getAll, ADMIN);

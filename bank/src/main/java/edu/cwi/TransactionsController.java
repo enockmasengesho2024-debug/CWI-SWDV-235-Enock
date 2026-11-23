@@ -78,7 +78,7 @@ public class TransactionsController implements CrudHandler {
 
         ledger.create(userId, accountId, description(ctx), amount(ctx));
 
-        ctx.redirect("/account?accountId=" + accountId, HttpStatus.SEE_OTHER);
+        ctx.redirect("/account/" + accountId, HttpStatus.SEE_OTHER);
     }
 
     @Override
@@ -157,6 +157,6 @@ public class TransactionsController implements CrudHandler {
                 ),
                 button("Save transaction").withType("submit")
         ).withMethod("post")
-         .withAction("/transactions/" + transaction.getId() + "/update");
+        .withAction("/transactions/" + transaction.getId() + "/update");
     }
 }

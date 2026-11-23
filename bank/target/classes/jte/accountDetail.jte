@@ -35,6 +35,29 @@
     `,
     detail = @`
         <section class="account-transactions">
+           
+            <form method="post" action="/transaction">
+                <input type="hidden" name="accountId" value="${account.getId()}">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
+
+                <h3>Add transaction</h3>
+
+                <p>
+                    <label for="description">Description</label>
+                    <input id="description" name="description"
+                        type="text" maxlength="255" required>
+                </p>
+
+                <p>
+                    <label for="amount">Amount</label>
+                    <input id="amount" name="amount"
+                        type="number" step="0.01" required>
+                </p>
+
+                <p>Use a positive amount for a deposit and a negative amount for a withdrawal.</p>
+                <button type="submit">Save transaction</button>
+            </form>
+
             <h3>Transactions</h3>
 
             <table aria-label="Transactions">

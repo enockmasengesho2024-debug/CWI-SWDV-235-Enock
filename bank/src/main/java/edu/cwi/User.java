@@ -1,6 +1,6 @@
 package edu.cwi;
 
-// JavaBean mapped to the users table.
+
 public class User {
     private Long id;
     private String username;
@@ -31,7 +31,7 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    // Explicit response type: the password hash never enters JSON responses.
+   
     public record Response(Long id, String username, String email,
                            String firstName, String lastName, String role) {}
 

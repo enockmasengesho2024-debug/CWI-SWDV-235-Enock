@@ -266,7 +266,6 @@ public class SecurityTest {
     public void finalInsertFailureRollsBackUserAndAccount() throws Exception {
         Browser admin = admin();
 
-        // Reject the $5 opening deposit in this test's database.
         try (Connection connection = source.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(
@@ -276,7 +275,6 @@ public class SecurityTest {
         HttpResponse<String> response = admin.json("POST", "/users", newUser("rollback"));
         assertEquals(response.body(), 409, response.statusCode());
 
-        // Only the seeded admin should remain after the rollback.
         assertEquals(1, count("users"));
         assertEquals(0, count("accounts"));
         assertEquals(0, count("transactions"));
@@ -350,7 +348,18 @@ public class SecurityTest {
         Browser alice = new Browser();
         alice.login("alice", "Password123!");
 
-        HttpResponse<String> page = enock.get("/account");
+        String detailPath = "/account/" + enockAccount.getId();
+
+        HttpResponse<String> list = enock.get("/accounts");
+        assertEquals(list.body(), 200, list.statusCode());
+        assertTrue(list.body().contains("enock Customer"));
+        assertTrue(list.body().contains("href=\"" + detailPath + "\""));
+        assertTrue(list.body().contains("$5.00"));
+
+        assertEquals(404, alice.get(detailPath).statusCode());
+
+        HttpResponse<String> page = enock.get(detailPath);
+        assertTrue(page.body().contains("href=\"/accounts\""));
         assertEquals(page.body(), 200, page.statusCode());
         assertTrue(page.body(), page.body().contains("enock Customer"));
         assertTrue(page.body(), page.body().contains("$5.00"));

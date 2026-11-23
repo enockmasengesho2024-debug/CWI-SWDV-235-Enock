@@ -1,0 +1,75 @@
+body {
+    margin: 0;
+    font: 1rem/1.5 Arial, sans-serif;
+    color: #25282b;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 4%;
+    background: #eceeef;
+}
+
+nav button {
+    border: 0;
+    background: transparent;
+    color: #224d86;
+    text-decoration: underline;
+    font: inherit;
+    cursor: pointer;
+}
+
+main {
+    max-width: 58rem;
+    margin: 2rem auto;
+    padding: 1.25rem;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+}
+
+main h2 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+main p {
+    margin: 0.4rem 0 1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 0.55rem 0.75rem;
+    text-align: left;
+}
+
+tbody tr:nth-child(odd) {
+    background: #f1f2f3;
+}
+
+footer {
+    padding: 1rem 4%;
+}
+
+.detail-toolbar {
+    text-align: right;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    margin: -1.25rem -1.25rem 1rem;
+    padding: 0.5rem 1rem;
+}
+
+.account-transactions {
+    margin-top: 2rem;
+}
+
+.account-transactions h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1rem;
+}

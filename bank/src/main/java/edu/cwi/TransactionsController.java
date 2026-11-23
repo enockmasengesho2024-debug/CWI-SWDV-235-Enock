@@ -1,7 +1,5 @@
 package edu.cwi;
 
-import static j2html.TagCreator.*;
-
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,6 +8,19 @@ import io.javalin.apibuilder.CrudHandler;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import static j2html.TagCreator.a;
+import static j2html.TagCreator.body;
+import static j2html.TagCreator.br;
+import static j2html.TagCreator.button;
+import static j2html.TagCreator.form;
+import static j2html.TagCreator.h1;
+import static j2html.TagCreator.head;
+import static j2html.TagCreator.html;
+import static j2html.TagCreator.input;
+import static j2html.TagCreator.label;
+import static j2html.TagCreator.meta;
+import static j2html.TagCreator.p;
+import static j2html.TagCreator.title;
 import j2html.tags.DomContent;
 
 public class TransactionsController implements CrudHandler {
@@ -23,9 +34,12 @@ public class TransactionsController implements CrudHandler {
 
     @Override
     public void getAll(Context ctx) {
+        renderAccount(ctx, ctx.queryParam("accountId"));
+    }
+
+    public void renderAccount(Context ctx, String selectedId) {
         User user = auth.requireUser(ctx);
-        LedgerService.Snapshot snapshot =
-                ledger.snapshot(user, ctx.queryParam("accountId"));
+        LedgerService.Snapshot snapshot = ledger.snapshot(user, selectedId);
 
         Map<String, Object> model = new LinkedHashMap<>();
         model.put("title", "My Account");

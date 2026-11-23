@@ -10,19 +10,16 @@
 
 @template.accountLayout(
     title = title,
+    csrfToken = csrfToken,
     account = @`
         @template.userAccount(name = account.name(), balance = account.formatBalance())
-        <form method="post" action="/logout">
-            <input type="hidden" name="csrfToken" value="${csrfToken}">
-            <button type="submit">Log Out</button>
-        </form>
     `,
     detail = @`
+        <p><a href="/accounts">Back to Accounts</a></p>
         @if(accounts.isEmpty())
             <p>You do not have a bank account yet.</p>
             <p>Administrators can create customers through the users API.</p>
         @else
-            <nav aria-label="Your accounts">
                 @for(Account item : accounts)
                     <a href="/account?accountId=${item.getId()}">${item.getAccountType()} #${item.getId()}</a>
                 @endfor

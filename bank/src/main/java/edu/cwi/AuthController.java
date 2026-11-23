@@ -39,7 +39,7 @@ public final class AuthController {
         LoginSession session = findSession(ctx);
 
         if (sessionUser(session) != null) {
-            ctx.redirect("/account");
+            ctx.redirect("/accounts");
             return;
         }
 
@@ -75,7 +75,7 @@ public final class AuthController {
                     "csrfToken", authenticated.csrfToken()
             ));
         } else {
-            ctx.redirect("/account", HttpStatus.SEE_OTHER);
+            ctx.redirect("/accounts", HttpStatus.SEE_OTHER);
         }
     }
 
@@ -100,7 +100,7 @@ public final class AuthController {
     public void logout(Context ctx) {
         discardSession(ctx);
         writeCookie(ctx, "", 0);
-        ctx.redirect("/login", HttpStatus.SEE_OTHER);
+        ctx.redirect("/", HttpStatus.SEE_OTHER);
     }
 
     public void checkAccess(Context ctx) {

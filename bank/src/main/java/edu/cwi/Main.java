@@ -90,6 +90,11 @@ public class Main {
                 post("/logout", auth::logout, USER);
                 get("/account", transactions::getAll, USER);
                 get("/account.html", ctx -> ctx.redirect("/account"), USER);
+                
+                AccountController accountController = new AccountController(auth, database);
+
+                get("/accounts", accountController::renderAccounts, USER);
+                get("/account/{id}", accountController::renderDetail, USER);
 
                 path("/users", () -> {
                     get(users::getAll, ADMIN);
@@ -117,6 +122,8 @@ public class Main {
                                 transactions.delete(ctx, ctx.pathParam("id")), USER);
                     });
                 });
+                
+
             });
         });
     }
